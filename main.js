@@ -43,7 +43,7 @@ await new Promise(function (resolve) {
             setTimeout(function () {
                 document.getElementById('overlay').classList.add('hide');
                 resolve();/* resolve after array is emptied ( all images are loaded )*/
-            }, 1000);
+            }, 2000);
         }
     }
 });
@@ -52,14 +52,16 @@ await new Promise(function (resolve) {
 const startBtnElm = document.getElementById('start-button');
 const gameNameContainerElm = document.getElementById('game-name-container');
 const startBtnContainer = document.getElementById('start-button-container');
+const scoreSpanElm = document.getElementById('score-span');
 /*after clicking start button*/
 startBtnElm.addEventListener('click', () => {
     /*hide game name and start button*/
     gameNameContainerElm.classList.add('hide');
     startBtnContainer.classList.add('hide');
     startBtnContainer.classList.remove('animate__animated');
-    treasureChestAppear();
-    enemyStart();
+    treasureChestAppear(); /*start timeout function to show treasure chest*/
+    enemyStart(); /* start enemy moving */
+    scoreCount(); /* start scoring */
 });
 
 
@@ -80,6 +82,8 @@ let renderTmr;
 let collisionTmr;
 let enemyMoveTmr;
 let winTmr;
+let scoreTmr;
+let score = 0;
 let t = 0;
 let previousTouch;
 
@@ -134,15 +138,24 @@ function gameWinFindingTreasure() {
             (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (treasureChestElm.offsetLeft + treasureChestElm.offsetWidth) &&
             characterElm.offsetTop + characterElm.offsetHeight >= treasureChestElm.offsetTop + 50) {
             const youWonBannerElm = document.getElementById('you-won-banner');
-            youWonBannerElm.classList.add('appear-and-expand');
-
+            clearInterval(scoreTmr);
             clearInterval(winTmr);
             clearInterval(renderTmr);
             clearInterval(enemyMoveTmr);
             clearInterval(collisionTmr);
+            // wait 2 seconds before showing won
+            setTimeout(() => {
+                youWonBannerElm.classList.add('appear-and-expand');
+            }, 2000);
 
         }
     }, 20);
+}
+
+function scoreCount() {
+    scoreTmr = setInterval(() => {
+        scoreSpanElm.innerText = `Score is ${score++}`;
+    }, 500);
 }
 
 function enemyStart() {
@@ -164,7 +177,6 @@ function detectCollision() {
             (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (enemyElm.offsetLeft + enemyElm.offsetWidth) &&
             characterElm.offsetTop + characterElm.offsetHeight >= enemyElm.offsetTop + 50) {
             makeCharacterDead();
-            // alert('collision');
         }
 
     }, 20);
@@ -175,14 +187,20 @@ function makeCharacterDead() {
     let deadTmr = setInterval(() => {
         characterElm.style.backgroundImage = `url(/image/character/Dead__00${i++}.png)`;
         if (i === 10) {
+            i = 9;
             /*stop game timers*/
+            clearInterval(scoreTmr);
             clearInterval(renderTmr);
             clearInterval(enemyMoveTmr);
             clearInterval(collisionTmr);
             const gameOverBannerElm = document.getElementById('game-over-banner');
             // gameOverBannerElm.style.visibility = 'visible';
-            gameOverBannerElm.classList.add('appear-and-expand');
             clearInterval(deadTmr);
+            /*wait 2 seconds before showing lost*/
+            setTimeout(() => {
+                gameOverBannerElm.classList.add('appear-and-expand');
+
+            }, 2000);
 
         }
     }, 1000 / 30);
