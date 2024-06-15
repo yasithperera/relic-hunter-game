@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Bonheur+Royale&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#character {
+    /*border: 1px solid black;*/
+    /*background-color: blue;*/
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 20px;
+    top: -20px;
+
+    /* to contain whole image in div*/
+    background-size: contain;
+    /* to repeat image appear again*/
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#enemy-div {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    right: -100px;
+    bottom: 110px;
+    /*background-color: yellow;*/
+
+    /* to contain whole image in div*/
+    background-size: contain;
+    /* to repeat image appear again*/
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* to rotate when running in opposite direction */
+.rotate {
+    transform: rotateY(-180deg);
+}
+
+#platform {
+    width: 100%;
+    height: 120px;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+
+    div {
+        height: 100%;
+
+        &:first-child {
+            width: 100px;
+            background-image: url("/image/tile/1.png");
+        }
+
+        &:last-child {
+            width: 100px;
+            background-image: url("/image/tile/3.png");
+        }
+
+        &:nth-child(2) {
+            flex-grow: 1;
+            background-image: url("/image/tile/2.png");
+        }
+    }
+}
+
+body {
+    background-image: url("/image/BG.png");
+    overflow: hidden;
+}
+
+#start-button-container {
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    top: 50%;
+    width: 100%;
+    height: 100px;
+}
+
+#start-button {
+    /*z-index: 2;*/
+    width: 110px;
+    height: 70px;
+    border: none;
+
+    background-image: url("/image/button/start-play-button.png");
+    background-position-x: -50px;
+    background-position-y: -27px;
+    background-size: 210px;
+
+    border-radius: 5px;
+
+    animation: pulse-animation 500ms infinite;
+
+}
+
+
+@keyframes pulse-animation {
+    from {
+        box-shadow: 0px 0px 12px 5px red;
+    }
+    to {
+        box-shadow: 0px 0px 13px 20px red;
+    }
+}
+
+#game-name-container {
+
+    width: 100%;
+    height: 192px;
+    display: flex;
+    justify-content: center;
+}
+
+#game-name-div {
+    z-index: 2;
+
+    width: 60%;
+    height: 100%;
+    /*background-color: yellow;*/
+    display: flex;
+
+    div {
+        height: 100%;
+
+        &:first-child {
+            width: 144px;
+            background-image: url("/image/banner/Banner_Connection_Left.png");
+        }
+
+        &:nth-child(2) {
+            background-image: url("/image/banner/Carved_3Slides.png");
+            background-repeat: no-repeat;
+            flex-grow: 1;
+            background-size: 600px;
+            background-position-x: -20px;
+
+            display: flex;
+            align-items: center;
+        }
+
+        &:last-child {
+
+            width: 144px;
+            background-image: url("/image/banner/Banner_Connection_Right.png");
+            background-position: right;
+        }
+    }
+}
+
+#game-name-span {
+    height: 100%;
+    width: 100%;
+    color: blue;
+    font-family: "Bonheur Royale", cursive;
+    font-weight: 400;
+    font-size: 8vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+
+    /*opacity: 0.5;*/
+
+    /*setting background*/
+    background-image: url("/image/treasure-map.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    flex-direction: column;
+    font-family: system-ui, 'sans-serif';
+    gap: 25px;
+
+    h1 {
+        text-shadow: 0 0 10px #51cbaf;
+    }
+
+    #progress-bar {
+        width: 90%;
+        height: 10px;
+        background-color: #858585;
+        border-radius: 10px;
+        box-shadow: 0 0 8px 2px white;
+
+        #bar {
+            width: 0;
+            height: 100%;
+            background-color: white;
+            border-radius: 10px;
+            transition: width 500ms;
+        }
+    }
+}
+
+.hide {
+    animation: fade 750ms forwards;
+}
+
+@keyframes fade {
+    from {
+        transform: scaleY(1);
+    }
+    to {
+        transform: scaleY(0);
+    }
+}
+
+#game-over-banner {
+    background-image: url("/image/game-over-banner.jpg");
+}
+
+.win-lose-banner {
+    position: fixed;
+    top: 0;
+    /*background-color: yellow;*/
+    /*background-image: url("/image/game-over-banner.jpg");*/
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    /*visibility: hidden;*/
+    transform: scaleX(0);
+    z-index: 3;
+}
+
+#you-won-banner {
+    background-image: url("/image/you-won-banner.jpg");
+}
+
+.appear-and-expand {
+    animation: expand 750ms forwards;
+}
+
+@keyframes expand {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+#treasure-chest-div {
+    width: 160px;
+    height: 150px;
+    /*background-color: yellow;*/
+    position: absolute;
+    bottom: 120px;
+    right: 50px;
+    /*z-index: 2;*/
+
+    background-image: url("/image/treasure-chest.png");
+    background-size: contain;
+    background-position: center;
+    display: none;
+}
