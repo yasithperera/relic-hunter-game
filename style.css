@@ -37,6 +37,21 @@
     background-position: center;
 }
 
+#normal-character{
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    right: -100px;
+    bottom: 110px;
+    /*background-color: yellow;*/
+
+    /* to contain whole image in div*/
+    background-size: contain;
+    /* to repeat image appear again*/
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 /* to rotate when running in opposite direction */
 .rotate {
     transform: rotateY(-180deg);

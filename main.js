@@ -21,7 +21,7 @@ await new Promise(function (resolve) {
             ]),
         ...Array(10).fill('/image/enemy/jackfree/png')
             .flatMap((value, index) => [
-                `${value}/Walk (${index + 1}).png`
+                `${value}/Walk00${index + 1}.png`
             ])
 
     ];
@@ -62,11 +62,13 @@ startBtnElm.addEventListener('click', () => {
     treasureChestAppear(); /*start timeout function to show treasure chest*/
     enemyStart(); /* start enemy moving */
     scoreCount(); /* start scoring */
+    normalCharacterStart();
 });
 
 
 const characterElm = document.querySelector('#character');
 const enemyElm = document.getElementById('enemy-div');
+const normalCharacterElm = document.getElementById('normal-character');
 const treasureChestElm = document.getElementById('treasure-chest-div');
 
 let dx = 0; //run
@@ -84,6 +86,8 @@ let enemyMoveTmr;
 let winTmr;
 let scoreTmr;
 let score = 0;
+let charX = 5;
+let charK=1;
 let t = 0;
 let previousTouch;
 
@@ -109,6 +113,11 @@ renderTmr = setInterval(() => {
     //enemy render
     enemyElm.style.backgroundImage = `url(/image/enemy/ninja/png/Attack__00${enemyK++}.png)`;
     if (enemyK === 10) enemyK = 0;
+    //normal character render
+    // normalCharacterElm.style.backgroundImage = `url(/image/enemy/ninja/png/Attack__00${charK++}.png)`;
+
+    normalCharacterElm.style.backgroundImage = `url(/image/enemy/jackfree/png/Walk00${charK++}.png)`;
+    if (charK === 11) charK = 1;
 
 }, 1000 / 30); /* 30 frames per second */
 
@@ -156,6 +165,17 @@ function scoreCount() {
     scoreTmr = setInterval(() => {
         scoreSpanElm.innerText = `Score is ${score++}`;
     }, 500);
+}
+
+function normalCharacterStart() {
+    setInterval(() => {
+        let charLeft = normalCharacterElm.offsetLeft - charX;
+        if (charLeft <= -100) {
+            charLeft = innerWidth;
+            // return;
+        }
+        normalCharacterElm.style.left = `${charLeft}px`;
+    }, 75);
 }
 
 function enemyStart() {
