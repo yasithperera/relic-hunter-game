@@ -63,6 +63,10 @@ startBtnElm.addEventListener('click', () => {
     enemyStart(); /* start enemy moving */
     scoreCount(); /* start scoring */
     normalCharacterStart();
+
+    setTimeout(() => {
+        startBtnContainer.style.display = 'none';
+    }, 1000);
 });
 
 
@@ -87,7 +91,7 @@ let winTmr;
 let scoreTmr;
 let score = 0;
 let charX = 5;
-let charK=1;
+let charK = 1;
 let t = 0;
 let previousTouch;
 
@@ -188,7 +192,7 @@ function enemyStart() {
             // return;
         }
         enemyElm.style.left = `${enemyLeft}px`;
-    }, 80);
+    }, 50);
 }
 
 function detectCollision() {
