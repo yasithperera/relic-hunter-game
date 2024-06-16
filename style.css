@@ -37,7 +37,7 @@
     background-position: center;
 }
 
-#normal-character{
+#normal-character {
     width: 100px;
     height: 100px;
     position: absolute;
@@ -86,18 +86,21 @@
 
 body {
     background-image: url("/image/BG.png");
+    background-position: top center;
     overflow: hidden;
 }
 
 #start-button-container {
-    z-index: 2;
+    position: fixed;
+    top: 0;
+    /*z-index: 2;*/
     display: flex;
     align-items: center;
     justify-content: center;
 
-    top: 50%;
+    /*top: 50%;*/
     width: 100%;
-    height: 100px;
+    height: 100vh;
 }
 
 #start-button {
@@ -304,7 +307,7 @@ body {
     align-items: center;
     justify-content: center;
 
-    #score-span{
+    #score-span {
         width: 60%;
         height: 100%;
         display: flex;
@@ -312,5 +315,62 @@ body {
         justify-content: center;
         font-size: 5vw;
         font-family: "Bonheur Royale", cursive;
+    }
+}
+
+#start-screen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(13, 5, 101);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    flex-direction: column;
+    gap: 10px;
+
+    button {
+        padding: 10px 20px;
+        font-size: 2rem;
+        font-weight: bold;
+        font-family: system-ui, sans-serif;
+        border-radius: 10px;
+        background-color: #ffffff;
+        border: none;
+        box-shadow: 0 0 4px 2px white;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 0 0 4px 4px white;
+        }
+
+        &:active {
+            box-shadow: 0 0 4px 4px white, inset 0 0 5px 3px #8a8a8a;
+        }
+    }
+
+    h2 {
+        font-family: system-ui, sans-serif;
+        color: white;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 1.8rem;
+
+        span {
+            font-size: 3rem;
+            vertical-align: sub;
+            color: lawngreen;
+            text-shadow: 1px 1px 9px #7aff01;
+        }
+    }
+
+    #footer {
+        color: white;
+        font-family: system-ui, sans-serif;
+        margin-top: 40px;
+        font-size: small;
     }
 }

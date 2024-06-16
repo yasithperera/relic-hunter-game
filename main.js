@@ -1,3 +1,14 @@
+await new Promise((resolve)=>{
+    document.querySelector("#start-screen > button")
+        .addEventListener('click', async ()=>{
+            await document.querySelector("html").requestFullscreen({
+                navigationUI: 'hide'
+            });
+            document.querySelector("#start-screen").remove();
+            resolve();
+        });
+});
+
 await new Promise(function (resolve) {
     const images = ['/image/BG.png',
         '/image/treasure-map.png',
@@ -59,6 +70,12 @@ startBtnElm.addEventListener('click', () => {
     gameNameContainerElm.classList.add('hide');
     startBtnContainer.classList.add('hide');
     startBtnContainer.classList.remove('animate__animated');
+
+    // /* enter full screen */
+    // document.querySelector("html").requestFullscreen({
+    //     navigationUI: 'hide'
+    // });
+
     treasureChestAppear(); /*start timeout function to show treasure chest*/
     enemyStart(); /* start enemy moving */
     scoreCount(); /* start scoring */
@@ -314,11 +331,37 @@ addEventListener('keyup', (e) => {
     }
 });
 
-/* browser resizing */
-addEventListener('resize', () => {
+const resizeFn = () => {
+    /* vertical position*/
     characterElm.style.top = `${innerHeight - 120 - characterElm.offsetHeight}px`;
     enemyElm.style.top = `${innerHeight - 120 - enemyElm.offsetHeight}px`;
-});
+    normalCharacterElm.style.top = `${innerHeight - 120 - normalCharacterElm.offsetHeight}px`;
+
+    /* horizontal position */
+    if (characterElm.offsetLeft < 0) {
+        characterElm.style.left = `0`;
+    } else if (characterElm.offsetLeft >= innerWidth) {
+        characterElm.style.left = `${innerWidth - characterElm.offsetWidth - 1}px`;
+    }
+
+    if (enemyElm.offsetLeft < 0) {
+        enemyElm.style.left = `0`;
+    } else if (enemyElm.offsetLeft >= innerWidth) {
+        enemyElm.style.left = `${innerWidth - enemyElm.offsetWidth - 1}px`;
+    }
+
+    if (normalCharacterElm.offsetLeft < 0) {
+        normalCharacterElm.style.left = `0`;
+    } else if (normalCharacterElm.offsetLeft >= innerWidth) {
+        normalCharacterElm.style.left = `${innerWidth - normalCharacterElm.offsetWidth - 1}px`;
+    }
+}
+
+/* browser resizing */
+addEventListener('resize', resizeFn);
+
+/* screen orientation change */
+screen.orientation.addEventListener('change', resizeFn);
 
 /*touch screen*/
 characterElm.addEventListener('touchmove', (e) => {
