@@ -18,7 +18,7 @@ Engaging Gameplay: Navigate through, avoid obstacles, and collect relics.<br>
 Beautiful Graphics: High-quality game sprites downloaded from GameArt2D.<br>
 Animated Elements: Stunning animations implemented using animate.css.<br>
 Game Won/Lost Banners: AI-generated banners from Leonardo AI for a polished look.<br>
-Responsive Design: Optimized for various screen sizes and devices.
+Responsive Design: Optimized for various screen sizes and devices.<br>
 <img src = "public/image/screenshots/2.png">
 <img src = "public/image/screenshots/5.png">
 <img src = "public/image/screenshots/6.png">
