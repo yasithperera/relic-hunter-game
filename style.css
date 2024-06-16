@@ -52,6 +52,7 @@
     background-position: center;
 }
 
+
 /* to rotate when running in opposite direction */
 .rotate {
     transform: rotateY(-180deg);
@@ -131,7 +132,6 @@ body {
 }
 
 #game-name-container {
-
     width: 100%;
     height: 192px;
     display: flex;

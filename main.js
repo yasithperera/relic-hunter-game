@@ -1,6 +1,6 @@
-await new Promise((resolve)=>{
+await new Promise((resolve) => {
     document.querySelector("#start-screen > button")
-        .addEventListener('click', async ()=>{
+        .addEventListener('click', async () => {
             await document.querySelector("html").requestFullscreen({
                 navigationUI: 'hide'
             });
@@ -70,11 +70,6 @@ startBtnElm.addEventListener('click', () => {
     gameNameContainerElm.classList.add('hide');
     startBtnContainer.classList.add('hide');
     startBtnContainer.classList.remove('animate__animated');
-
-    // /* enter full screen */
-    // document.querySelector("html").requestFullscreen({
-    //     navigationUI: 'hide'
-    // });
 
     treasureChestAppear(); /*start timeout function to show treasure chest*/
     enemyStart(); /* start enemy moving */
