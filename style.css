@@ -6,52 +6,39 @@
     padding: 0;
 }
 
-#character {
-    /*border: 1px solid black;*/
-    /*background-color: blue;*/
+.game-character {
     width: 100px;
     height: 100px;
     position: absolute;
-    left: 20px;
-    top: -20px;
 
     /* to contain whole image in div*/
     background-size: contain;
     /* to repeat image appear again*/
     background-repeat: no-repeat;
     background-position: center;
+}
+
+#character {
+    left: 20px;
+    top: -20px;
 }
 
 #enemy-div {
-    width: 100px;
-    height: 100px;
-    position: absolute;
     right: -100px;
     bottom: 110px;
-    /*background-color: yellow;*/
-
-    /* to contain whole image in div*/
-    background-size: contain;
-    /* to repeat image appear again*/
-    background-repeat: no-repeat;
-    background-position: center;
+    background-size: cover;
 }
 
 #normal-character {
-    width: 100px;
-    height: 100px;
-    position: absolute;
     right: -100px;
     bottom: 110px;
-    /*background-color: yellow;*/
-
-    /* to contain whole image in div*/
-    background-size: contain;
-    /* to repeat image appear again*/
-    background-repeat: no-repeat;
-    background-position: center;
 }
 
+#reward-character {
+    right: -100px;
+    bottom: 110px;
+    background-size: cover;
+}
 
 /* to rotate when running in opposite direction */
 .rotate {
@@ -374,3 +361,24 @@ body {
         font-size: small;
     }
 }
+
+.reward{
+    width: 150px;
+    height: 150px;
+    background-size: contain;
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    visibility: hidden;
+
+    transition: visibility 200ms;
+}
+
+#gift-div {
+    background-image: url("/image/gift.png");
+}
+
+#cross-div{
+    background-image: url("/image/cross.png");
+}
+

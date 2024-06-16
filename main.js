@@ -33,6 +33,10 @@ await new Promise(function (resolve) {
         ...Array(10).fill('/image/enemy/jackfree/png')
             .flatMap((value, index) => [
                 `${value}/Walk00${index + 1}.png`
+            ]),
+        ...Array(13).fill('/image/enemy/santasprites/png')
+            .flatMap((value, index) => [
+                `${value}/Walk${index + 1}.png`
             ])
 
     ];
@@ -74,7 +78,8 @@ startBtnElm.addEventListener('click', () => {
     treasureChestAppear(); /*start timeout function to show treasure chest*/
     enemyStart(); /* start enemy moving */
     scoreCount(); /* start scoring */
-    normalCharacterStart();
+    detectReward();/* start reward function */
+    normalCharacterStart(); /* normal and reward character start moving */
 
     setTimeout(() => {
         startBtnContainer.style.display = 'none';
@@ -85,7 +90,10 @@ startBtnElm.addEventListener('click', () => {
 const characterElm = document.querySelector('#character');
 const enemyElm = document.getElementById('enemy-div');
 const normalCharacterElm = document.getElementById('normal-character');
+const rewardCharacterElm = document.getElementById('reward-character');
 const treasureChestElm = document.getElementById('treasure-chest-div');
+const giftElm = document.getElementById('gift-div');
+const crossElm = document.getElementById('cross-div');
 
 let dx = 0; //run
 let i = 0; //rendering
@@ -99,16 +107,20 @@ let tmrForRun;
 let renderTmr;
 let collisionTmr;
 let enemyMoveTmr;
+let normalAndRewardCharMoveTmr;
 let winTmr;
 let scoreTmr;
+let rewardTmr;
 let score = 0;
 let charX = 5;
 let charK = 1;
+let rewardCharK = 1;
+let rewardCharX = 20;
 let t = 0;
 let previousTouch;
 
 //rendering
-/* to change the background image of character div */
+/* to change the background image of game-character divs */
 renderTmr = setInterval(() => {
     if (jump) {
         /*add jump images and change in interval when jumping*/
@@ -129,11 +141,14 @@ renderTmr = setInterval(() => {
     //enemy render
     enemyElm.style.backgroundImage = `url(/image/enemy/ninja/png/Attack__00${enemyK++}.png)`;
     if (enemyK === 10) enemyK = 0;
-    //normal character render
-    // normalCharacterElm.style.backgroundImage = `url(/image/enemy/ninja/png/Attack__00${charK++}.png)`;
 
+    //normal character render
     normalCharacterElm.style.backgroundImage = `url(/image/enemy/jackfree/png/Walk00${charK++}.png)`;
     if (charK === 11) charK = 1;
+
+    //reward character render
+    rewardCharacterElm.style.backgroundImage = `url(/image/enemy/santasprites/png/Walk${rewardCharK++}.png)`;
+    if (rewardCharK === 14) rewardCharK = 1;
 
 }, 1000 / 30); /* 30 frames per second */
 
@@ -168,6 +183,9 @@ function gameWinFindingTreasure() {
             clearInterval(renderTmr);
             clearInterval(enemyMoveTmr);
             clearInterval(collisionTmr);
+            clearInterval(normalAndRewardCharMoveTmr);
+            clearInterval(rewardTmr);
+
             // wait 2 seconds before showing won
             setTimeout(() => {
                 youWonBannerElm.classList.add('appear-and-expand');
@@ -184,13 +202,21 @@ function scoreCount() {
 }
 
 function normalCharacterStart() {
-    setInterval(() => {
+    normalAndRewardCharMoveTmr = setInterval(() => {
+        /* movement of regular character */
         let charLeft = normalCharacterElm.offsetLeft - charX;
         if (charLeft <= -100) {
             charLeft = innerWidth;
-            // return;
         }
         normalCharacterElm.style.left = `${charLeft}px`;
+
+        /* movement of reward character */
+        charLeft = rewardCharacterElm.offsetLeft - Math.random() * rewardCharX;
+        if (charLeft <= -100) {
+            charLeft = innerWidth;
+        }
+        rewardCharacterElm.style.left = `${charLeft}px`;
+
     }, 75);
 }
 
@@ -205,6 +231,51 @@ function enemyStart() {
         }
         enemyElm.style.left = `${enemyLeft}px`;
     }, 50);
+}
+
+function detectReward() {
+    let rewarded = false; /* to detect whether this collision has been awarded once */
+    let degraded=false;/* to detect whether this collision has been degraded once */
+    rewardTmr = setInterval(() => {
+        if ((characterElm.offsetLeft + characterElm.offsetWidth - 50) >= rewardCharacterElm.offsetLeft &&
+            (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (rewardCharacterElm.offsetLeft + rewardCharacterElm.offsetWidth) &&
+            characterElm.offsetTop + characterElm.offsetHeight >= rewardCharacterElm.offsetTop + 50) {
+
+            /* do this if this collision has not already been awarded */
+            if (!rewarded) {
+                /*increase score*/
+                score += 100;
+                scoreSpanElm.innerText = `Score is ${score}`;
+                giftElm.style.visibility = 'visible';/* show gift */
+                rewarded = true; /* this collision is awarded */
+                setTimeout(() => {
+                    giftElm.style.visibility = 'hidden'; /* hide gift */
+                }, 1000);
+            }
+        } else {
+            rewarded = false;
+        }
+
+        /* reducing score */
+        if ((characterElm.offsetLeft + characterElm.offsetWidth - 50) >= normalCharacterElm.offsetLeft &&
+            (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (normalCharacterElm.offsetLeft + normalCharacterElm.offsetWidth) &&
+            characterElm.offsetTop + characterElm.offsetHeight >= normalCharacterElm.offsetTop + 50) {
+
+            /* do this if this collision has not already been degraded */
+            if (!degraded) {
+                /*decrease score*/
+                score -= 50;
+                scoreSpanElm.innerText = `Score is ${score}`;
+                crossElm.style.visibility = 'visible';/* show cross */
+                degraded = true; /* this collision is degraded */
+                setTimeout(() => {
+                    crossElm.style.visibility = 'hidden'; /* hide cross */
+                }, 1000);
+            }
+        } else {
+            degraded = false;
+        }
+    }, 20);
 }
 
 function detectCollision() {
@@ -229,6 +300,9 @@ function makeCharacterDead() {
             clearInterval(renderTmr);
             clearInterval(enemyMoveTmr);
             clearInterval(collisionTmr);
+            clearInterval(normalAndRewardCharMoveTmr);
+            clearInterval(rewardTmr);
+
             const gameOverBannerElm = document.getElementById('game-over-banner');
             // gameOverBannerElm.style.visibility = 'visible';
             clearInterval(deadTmr);
@@ -359,17 +433,18 @@ addEventListener('resize', resizeFn);
 screen.orientation.addEventListener('change', resizeFn);
 
 /*touch screen*/
-characterElm.addEventListener('touchmove', (e) => {
-    if (!previousTouch) {
+characterElm.addEventListener('touchmove', (e)=>{
+    if (!previousTouch){
         previousTouch = e.touches.item(0);
         return;
     }
     const currentTouch = e.touches.item(0);
     doRun((currentTouch.clientX - previousTouch.clientX) < 0);
+    if (currentTouch.clientY < previousTouch.clientY) doJump();
     previousTouch = currentTouch;
 });
 
-characterElm.addEventListener('touchend', (e) => {
+characterElm.addEventListener('touchend', (e)=>{
     previousTouch = null;
     dx = 0;
 });
