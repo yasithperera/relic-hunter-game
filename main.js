@@ -63,6 +63,21 @@ await new Promise(function (resolve) {
     }
 });
 
+/* background music */
+const backgroundMusicElement = document.getElementById("background-music");
+// Play the audio
+backgroundMusicElement.play();
+backgroundMusicElement.volume = 0.5;
+backgroundMusicElement.addEventListener("ended", () => {
+    backgroundMusicElement.currentTime = 0; // Reset playback position to the beginning
+    backgroundMusicElement.play(); // Start playing again
+});
+
+const jumpMusicElm = document.getElementById("jump-music");
+const giftMusicElm = document.getElementById("gift-music");
+const loseGameMusicElm = document.getElementById("lose-game-music");
+const reduceMarksMusicElm = document.getElementById("reduce-marks-music");
+const winGameMusicElm = document.getElementById("win-game-music");
 
 const startBtnElm = document.getElementById('start-button');
 const gameNameContainerElm = document.getElementById('game-name-container');
@@ -168,6 +183,7 @@ const dropTimer = setInterval(() => {
 function treasureChestAppear() {
     setTimeout(() => {
         treasureChestElm.style.display = 'block';
+        giftMusicElm.play();
         gameWinFindingTreasure();
     }, 1000 * 60 * 10);
 }
@@ -178,6 +194,10 @@ function gameWinFindingTreasure() {
             (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (treasureChestElm.offsetLeft + treasureChestElm.offsetWidth) &&
             characterElm.offsetTop + characterElm.offsetHeight >= treasureChestElm.offsetTop + 50) {
             const youWonBannerElm = document.getElementById('you-won-banner');
+
+            backgroundMusicElement.pause(); /* pause background music */
+            winGameMusicElm.play(); /* play winning music */
+
             clearInterval(scoreTmr);
             clearInterval(winTmr);
             clearInterval(renderTmr);
@@ -235,7 +255,7 @@ function enemyStart() {
 
 function detectReward() {
     let rewarded = false; /* to detect whether this collision has been awarded once */
-    let degraded=false;/* to detect whether this collision has been degraded once */
+    let degraded = false;/* to detect whether this collision has been degraded once */
     rewardTmr = setInterval(() => {
         if ((characterElm.offsetLeft + characterElm.offsetWidth - 50) >= rewardCharacterElm.offsetLeft &&
             (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (rewardCharacterElm.offsetLeft + rewardCharacterElm.offsetWidth) &&
@@ -248,6 +268,7 @@ function detectReward() {
                 scoreSpanElm.innerText = `Score is ${score}`;
                 giftElm.style.visibility = 'visible';/* show gift */
                 rewarded = true; /* this collision is awarded */
+                giftMusicElm.play();
                 setTimeout(() => {
                     giftElm.style.visibility = 'hidden'; /* hide gift */
                 }, 1000);
@@ -268,6 +289,7 @@ function detectReward() {
                 scoreSpanElm.innerText = `Score is ${score}`;
                 crossElm.style.visibility = 'visible';/* show cross */
                 degraded = true; /* this collision is degraded */
+                reduceMarksMusicElm.play();
                 setTimeout(() => {
                     crossElm.style.visibility = 'hidden'; /* hide cross */
                 }, 1000);
@@ -303,6 +325,9 @@ function makeCharacterDead() {
             clearInterval(normalAndRewardCharMoveTmr);
             clearInterval(rewardTmr);
 
+            backgroundMusicElement.pause();
+            loseGameMusicElm.play();
+
             const gameOverBannerElm = document.getElementById('game-over-banner');
             // gameOverBannerElm.style.visibility = 'visible';
             clearInterval(deadTmr);
@@ -321,6 +346,7 @@ function doJump() {
     if (tmrForJump) return; /* if there is no timer set , timer will start, if we don't check this new timers will be set again while we keep space key pressed*/
     i = 0; //start jump image sequence from 0
     jump = true;
+    jumpMusicElm.play();
     const initialTop = characterElm.offsetTop; /*get initial top value*/
 
     tmrForJump = setInterval(() => {
@@ -433,8 +459,8 @@ addEventListener('resize', resizeFn);
 screen.orientation.addEventListener('change', resizeFn);
 
 /*touch screen*/
-characterElm.addEventListener('touchmove', (e)=>{
-    if (!previousTouch){
+characterElm.addEventListener('touchmove', (e) => {
+    if (!previousTouch) {
         previousTouch = e.touches.item(0);
         return;
     }
@@ -444,7 +470,7 @@ characterElm.addEventListener('touchmove', (e)=>{
     previousTouch = currentTouch;
 });
 
-characterElm.addEventListener('touchend', (e)=>{
+characterElm.addEventListener('touchend', (e) => {
     previousTouch = null;
     dx = 0;
 });
