@@ -362,7 +362,7 @@ body {
     }
 }
 
-.reward{
+.reward {
     width: 150px;
     height: 150px;
     background-size: contain;
@@ -378,7 +378,26 @@ body {
     background-image: url("/image/gift.png");
 }
 
-#cross-div{
+#cross-div {
     background-image: url("/image/cross.png");
+}
+
+#final-score-div {
+    width: 100%;
+    height: 100px;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    #final-score-span {
+        font-family: "Bonheur Royale", cursive;
+        color: white;
+        font-weight: 800;
+        font-size: 6vw;
+        z-index: 3;
+        visibility: hidden;
+    }
 }
 

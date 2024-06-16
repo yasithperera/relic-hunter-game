@@ -208,6 +208,9 @@ function gameWinFindingTreasure() {
 
             // wait 2 seconds before showing won
             setTimeout(() => {
+                const finalScoreSpanElm = document.getElementById('final-score-span');
+                finalScoreSpanElm.innerText = "Final Score : " + (score - 1);
+                finalScoreSpanElm.style.visibility = 'visible';
                 youWonBannerElm.classList.add('appear-and-expand');
             }, 2000);
 
@@ -333,6 +336,9 @@ function makeCharacterDead() {
             clearInterval(deadTmr);
             /*wait 2 seconds before showing lost*/
             setTimeout(() => {
+                const finalScoreSpanElm = document.getElementById('final-score-span');
+                finalScoreSpanElm.innerText = "Final Score : " + (score - 1);
+                finalScoreSpanElm.style.visibility = 'visible';
                 gameOverBannerElm.classList.add('appear-and-expand');
 
             }, 2000);
