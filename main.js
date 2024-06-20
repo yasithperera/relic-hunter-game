@@ -66,6 +66,7 @@ await new Promise(function (resolve) {
 const backgroundImages = ['/image/BG.png', '/image/BG-night.jpg', '/image/BG-treasure.jpg'];
 let backgroundImagesIndex = 1;
 
+
 /* background music */
 const backgroundMusicElement = document.getElementById("background-music");
 
@@ -93,7 +94,7 @@ function changeBackground() {
         }, 3000);
         if (backgroundImagesIndex !== 0) scoreSpanElm.style.color = 'white';
         else scoreSpanElm.style.color = 'black';
-    }, 60 * 1000 * 5);
+    }, 60 * 1000 * 2.5);
 }
 
 const jumpMusicElm = document.getElementById("jump-music");
@@ -111,7 +112,14 @@ const scoreSpanElm = document.getElementById('score-span');
 const finalScoreSpanElm = document.getElementById('final-score-span');
 const gameOverBannerElm = document.getElementById('game-over-banner');
 const youWonBannerElm = document.getElementById('you-won-banner');
+const restartScreenElm = document.getElementById('restart-screen');
 
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && startBtnContainer.style.display !== 'none') {
+        startBtnElm.click();
+    }
+});
 
 /* when user ask to exit */
 exitBtnElm.addEventListener('click', () => {
@@ -147,7 +155,6 @@ const rewardCharacterElm = document.getElementById('reward-character');
 const treasureChestElm = document.getElementById('treasure-chest-div');
 const giftElm = document.getElementById('gift-div');
 const crossElm = document.getElementById('cross-div');
-const restartScreenElm = document.getElementById('restart-screen');
 
 let dx = 0; //run
 let i = 0; //rendering
@@ -293,7 +300,7 @@ function treasureChestAppear() {
         treasureChestElm.style.display = 'block';
         giftMusicElm.play();
         gameWinFindingTreasure();
-    }, 1000 * 60 * 10);
+    }, 1000 * 60 * 5);
 }
 
 function gameWinFindingTreasure() {
