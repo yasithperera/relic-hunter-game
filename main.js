@@ -63,15 +63,38 @@ await new Promise(function (resolve) {
     }
 });
 
+const backgroundImages = ['/image/BG.png', '/image/BG-night.jpg', '/image/BG-treasure.jpg'];
+let backgroundImagesIndex = 1;
+
 /* background music */
 const backgroundMusicElement = document.getElementById("background-music");
+
 // Play the audio
-backgroundMusicElement.play();
-backgroundMusicElement.volume = 0.5;
-backgroundMusicElement.addEventListener("ended", () => {
-    backgroundMusicElement.currentTime = 0; // Reset playback position to the beginning
-    backgroundMusicElement.play(); // Start playing again
-});
+function playBackgroundMusic() {
+    backgroundMusicElement.play();
+    backgroundMusicElement.volume = 0.5;
+    backgroundMusicElement.addEventListener("ended", () => {
+        backgroundMusicElement.currentTime = 0; // Reset playback position to the beginning
+        backgroundMusicElement.play(); // Start playing again
+    });
+}
+
+playBackgroundMusic();
+
+const backgroundDivElm = document.getElementById('background-div');
+let backgroundTmr;
+
+function changeBackground() {
+    backgroundTmr = setTimeout(() => {
+        backgroundDivElm.classList.add('change-opacity');
+        backgroundDivElm.style.backgroundImage = `url("${backgroundImages[1]}")`;
+        setTimeout(() => {
+            backgroundDivElm.classList.remove('change-opacity');
+        }, 3000);
+        if (backgroundImagesIndex !== 0) scoreSpanElm.style.color = 'white';
+        else scoreSpanElm.style.color = 'black';
+    }, 60 * 1000 * 5);
+}
 
 const jumpMusicElm = document.getElementById("jump-music");
 const giftMusicElm = document.getElementById("gift-music");
@@ -80,9 +103,22 @@ const reduceMarksMusicElm = document.getElementById("reduce-marks-music");
 const winGameMusicElm = document.getElementById("win-game-music");
 
 const startBtnElm = document.getElementById('start-button');
+const replayBtnElm = document.getElementById('replay-button');
+const exitBtnElm = document.getElementById('exit-button');
 const gameNameContainerElm = document.getElementById('game-name-container');
 const startBtnContainer = document.getElementById('start-button-container');
 const scoreSpanElm = document.getElementById('score-span');
+const finalScoreSpanElm = document.getElementById('final-score-span');
+const gameOverBannerElm = document.getElementById('game-over-banner');
+const youWonBannerElm = document.getElementById('you-won-banner');
+
+
+/* when user ask to exit */
+exitBtnElm.addEventListener('click', () => {
+    /* reload the game */
+    location.reload();
+});
+
 /*after clicking start button*/
 startBtnElm.addEventListener('click', () => {
     /*hide game name and start button*/
@@ -90,11 +126,13 @@ startBtnElm.addEventListener('click', () => {
     startBtnContainer.classList.add('hide');
     startBtnContainer.classList.remove('animate__animated');
 
+    dropMainCharacter();/*drop main character from top*/
     treasureChestAppear(); /*start timeout function to show treasure chest*/
     enemyStart(); /* start enemy moving */
     scoreCount(); /* start scoring */
     detectReward();/* start reward function */
     normalCharacterStart(); /* normal and reward character start moving */
+    changeBackground(); /* start background change function */
 
     setTimeout(() => {
         startBtnContainer.style.display = 'none';
@@ -109,6 +147,7 @@ const rewardCharacterElm = document.getElementById('reward-character');
 const treasureChestElm = document.getElementById('treasure-chest-div');
 const giftElm = document.getElementById('gift-div');
 const crossElm = document.getElementById('cross-div');
+const restartScreenElm = document.getElementById('restart-screen');
 
 let dx = 0; //run
 let i = 0; //rendering
@@ -126,6 +165,7 @@ let normalAndRewardCharMoveTmr;
 let winTmr;
 let scoreTmr;
 let rewardTmr;
+let treasureChestTmr;
 let score = 0;
 let charX = 5;
 let charK = 1;
@@ -133,55 +173,123 @@ let rewardCharK = 1;
 let rewardCharX = 20;
 let t = 0;
 let previousTouch;
+let wonGame = false;
+let gameEnded = false;
 
 //rendering
 /* to change the background image of game-character divs */
-renderTmr = setInterval(() => {
-    if (jump) {
-        /*add jump images and change in interval when jumping*/
-        characterElm.style.backgroundImage = `url(/image/character/Jump__00${i++}.png)`;
-        if (i === 10) i = 0;
-    } else {
-        if (!run) {
-            /*add idle images and change in interval when not running*/
-            characterElm.style.backgroundImage = `url(/image/character/Idle__00${i++}.png)`;
+function renderCharacters() {
+    renderTmr = setInterval(() => {
+        if (jump) {
+            /*add jump images and change in interval when jumping*/
+            characterElm.style.backgroundImage = `url(/image/character/Jump__00${i++}.png)`;
             if (i === 10) i = 0;
         } else {
-            /*add run images and change in interval when running*/
-            characterElm.style.backgroundImage = `url(/image/character/Run__00${i++}.png)`;
-            if (i === 10) i = 0;
+            if (!run) {
+                /*add idle images and change in interval when not running*/
+                characterElm.style.backgroundImage = `url(/image/character/Idle__00${i++}.png)`;
+                if (i === 10) i = 0;
+            } else {
+                /*add run images and change in interval when running*/
+                characterElm.style.backgroundImage = `url(/image/character/Run__00${i++}.png)`;
+                if (i === 10) i = 0;
+            }
         }
-    }
 
-    //enemy render
-    enemyElm.style.backgroundImage = `url(/image/enemy/ninja/png/Attack__00${enemyK++}.png)`;
-    if (enemyK === 10) enemyK = 0;
+        //enemy render
+        enemyElm.style.backgroundImage = `url(/image/enemy/ninja/png/Attack__00${enemyK++}.png)`;
+        if (enemyK === 10) enemyK = 0;
 
-    //normal character render
-    normalCharacterElm.style.backgroundImage = `url(/image/enemy/jackfree/png/Walk00${charK++}.png)`;
-    if (charK === 11) charK = 1;
+        //normal character render
+        normalCharacterElm.style.backgroundImage = `url(/image/enemy/jackfree/png/Walk00${charK++}.png)`;
+        if (charK === 11) charK = 1;
 
-    //reward character render
-    rewardCharacterElm.style.backgroundImage = `url(/image/enemy/santasprites/png/Walk${rewardCharK++}.png)`;
-    if (rewardCharK === 14) rewardCharK = 1;
+        //reward character render
+        rewardCharacterElm.style.backgroundImage = `url(/image/enemy/santasprites/png/Walk${rewardCharK++}.png)`;
+        if (rewardCharK === 14) rewardCharK = 1;
 
-}, 1000 / 30); /* 30 frames per second */
+    }, 1000 / 30); /* 30 frames per second */
+}
 
+renderCharacters();
 
 /* this is to drop from the top initially */
-const dropTimer = setInterval(() => {
-    /*change top value with time*/
-    const top = characterElm.offsetTop + (t++ * 3);
-    characterElm.style.top = `${top}px`;
-    /* stop timer when reached the bottom */
-    if (characterElm.offsetTop >= (innerHeight - 150 - characterElm.offsetHeight)) {
-        clearInterval(dropTimer);
+
+function dropMainCharacter() {
+    const dropTimer = setInterval(() => {
+        /*change top value with time*/
+        const top = characterElm.offsetTop + (t++ * 3);
+        characterElm.style.top = `${top}px`;
+        /* stop timer when reached the bottom */
+        if (characterElm.offsetTop >= (innerHeight - 150 - characterElm.offsetHeight)) {
+            clearInterval(dropTimer);
+        }
+
+    }, 25);
+}
+
+function replayGame() {
+    backgroundDivElm.classList.remove('change-opacity');
+    scoreSpanElm.style.color = 'black';
+    treasureChestElm.style.display = 'none';
+    playBackgroundMusic();
+    finalScoreSpanElm.style.visibility = 'hidden';
+    if (wonGame) {
+        youWonBannerElm.classList.add('hide');
+        youWonBannerElm.classList.remove('appear-and-expand');
+
+    } else {
+        gameOverBannerElm.classList.add('hide');
+        gameOverBannerElm.classList.remove('appear-and-expand');
     }
 
-}, 25);
+    previousTouch = undefined; /* previous touch point is none */
+    gameEnded = false;
+    wonGame = false;
+    i = 0;/* main Character image rendering variable */
+    charK = 0;/* normal Character image rendering variable */
+    enemyK = 0; /* enemy Character image rendering variable */
+    rewardCharK = 0; /* reward Character image rendering variable */
+    t = 0; /* drop time */
+    backgroundImagesIndex = 0;/*start background change from beginning*/
+    backgroundDivElm.style.backgroundImage = `url("${backgroundImages[backgroundImagesIndex]}")`;
+
+    /*character positioning*/
+    characterElm.style.top = `${-20}px`;
+    characterElm.style.left = `${20}px`;
+
+    enemyElm.style.left = '-100px';
+
+    rewardCharacterElm.style.left = '-100px';
+
+    normalCharacterElm.style.left = '-100px';
+
+    renderCharacters();
+
+    /* show start button */
+    startBtnContainer.style.display = 'flex';
+    startBtnContainer.classList.remove('hide');
+    startBtnContainer.classList.add('animate__animated');
+
+    /* remove restart screen */
+    restartScreenElm.style.display = 'none';
+
+    /*reset score*/
+    score = 0;
+    scoreSpanElm.innerText = 'Score is 0';
+
+}
+
+replayBtnElm.addEventListener('click', replayGame);
 
 function treasureChestAppear() {
-    setTimeout(() => {
+
+    treasureChestTmr = setTimeout(() => {
+        backgroundDivElm.classList.add('change-opacity');
+        backgroundDivElm.style.backgroundImage = `url("${backgroundImages[2]}")`;
+        setTimeout(() => {
+            backgroundDivElm.classList.remove('change-opacity');
+        }, 3000);
         treasureChestElm.style.display = 'block';
         giftMusicElm.play();
         gameWinFindingTreasure();
@@ -194,10 +302,12 @@ function gameWinFindingTreasure() {
             (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (treasureChestElm.offsetLeft + treasureChestElm.offsetWidth) &&
             characterElm.offsetTop + characterElm.offsetHeight >= treasureChestElm.offsetTop + 50) {
             const youWonBannerElm = document.getElementById('you-won-banner');
-
+            wonGame = true;
+            gameEnded = true;
             backgroundMusicElement.pause(); /* pause background music */
             winGameMusicElm.play(); /* play winning music */
 
+            /*clear the timers*/
             clearInterval(scoreTmr);
             clearInterval(winTmr);
             clearInterval(renderTmr);
@@ -205,13 +315,18 @@ function gameWinFindingTreasure() {
             clearInterval(collisionTmr);
             clearInterval(normalAndRewardCharMoveTmr);
             clearInterval(rewardTmr);
+            clearInterval(backgroundTmr);
+            clearInterval(treasureChestTmr);
 
             // wait 2 seconds before showing won
             setTimeout(() => {
                 const finalScoreSpanElm = document.getElementById('final-score-span');
-                finalScoreSpanElm.innerText = "Final Score : " + (score - 1);
+                finalScoreSpanElm.innerText = "Final Score : " + (score <= 0 ? score : (score - 1));
                 finalScoreSpanElm.style.visibility = 'visible';
+                youWonBannerElm.classList.remove('hide');
                 youWonBannerElm.classList.add('appear-and-expand');
+                /*show restart screen*/
+                restartScreenElm.style.display = 'flex';
             }, 2000);
 
         }
@@ -250,7 +365,6 @@ function enemyStart() {
         let enemyLeft = enemyElm.offsetLeft - enemyDx;
         if (enemyLeft <= -100) {
             enemyLeft = innerWidth;
-            // return;
         }
         enemyElm.style.left = `${enemyLeft}px`;
     }, 50);
@@ -308,6 +422,8 @@ function detectCollision() {
         if ((characterElm.offsetLeft + characterElm.offsetWidth - 50) >= enemyElm.offsetLeft &&
             (characterElm.offsetLeft + characterElm.offsetWidth - 50) <= (enemyElm.offsetLeft + enemyElm.offsetWidth) &&
             characterElm.offsetTop + characterElm.offsetHeight >= enemyElm.offsetTop + 50) {
+            wonGame = false;
+            gameEnded = true;
             makeCharacterDead();
         }
 
@@ -327,19 +443,23 @@ function makeCharacterDead() {
             clearInterval(collisionTmr);
             clearInterval(normalAndRewardCharMoveTmr);
             clearInterval(rewardTmr);
+            clearInterval(backgroundTmr);
+            clearInterval(treasureChestTmr);
 
             backgroundMusicElement.pause();
             loseGameMusicElm.play();
 
-            const gameOverBannerElm = document.getElementById('game-over-banner');
-            // gameOverBannerElm.style.visibility = 'visible';
+            // const gameOverBannerElm = document.getElementById('game-over-banner');
             clearInterval(deadTmr);
             /*wait 2 seconds before showing lost*/
             setTimeout(() => {
                 const finalScoreSpanElm = document.getElementById('final-score-span');
-                finalScoreSpanElm.innerText = "Final Score : " + (score - 1);
+                finalScoreSpanElm.innerText = "Final Score : " + (score <= 0 ? score : (score - 1));
                 finalScoreSpanElm.style.visibility = 'visible';
+                gameOverBannerElm.classList.remove('hide');
                 gameOverBannerElm.classList.add('appear-and-expand');
+                /*show restart screen*/
+                restartScreenElm.style.display = 'flex';
 
             }, 2000);
 
@@ -349,6 +469,7 @@ function makeCharacterDead() {
 
 function doJump() {
 //jump
+    if (gameEnded) return;
     if (tmrForJump) return; /* if there is no timer set , timer will start, if we don't check this new timers will be set again while we keep space key pressed*/
     i = 0; //start jump image sequence from 0
     jump = true;
@@ -378,6 +499,7 @@ function toRadians(angle) {
 
 /* this is to move in horizontal direction ( run ) */
 function doRun(left) {
+    if (gameEnded) return;
     if (tmrForRun) return; /* return if already there is tmr for run , if not tmrforrun will be set again and again while we keep key pressed*/
     run = true;
     i = 0;
