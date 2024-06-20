@@ -11,6 +11,8 @@ await new Promise((resolve) => {
 
 await new Promise(function (resolve) {
     const images = ['/image/BG.png',
+        '/image/BG-night.jpg',
+        '/image/BG-treasure.jpg',
         '/image/treasure-map.png',
         '/image/treasure-chest.png',
         '/image/tile/1.png',
