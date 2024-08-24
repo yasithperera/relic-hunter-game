@@ -37,7 +37,7 @@ Firebase: For deployment and hosting.
 ### To run the game locally, follow these steps:
 
 #### Clone the repository:
-git clone https://github.com/your-username/2d-relic-hunter.git
+git clone https://github.com/yasithperera/relic-hunter-game.git
 
 #### Navigate to the project directory:
 
